@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CDN Scalar API Reference</title>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <link href="/assets/favicon.ico" rel="icon" type="image/x-icon" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=JetBrains+Mono&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --scalar-font: "Roboto", "Inter", -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
+          "Helvetica Neue", sans-serif;
+        --scalar-font-code: "Roboto", "JetBrains Mono", ui-monospace, Menlo,
+          Monaco, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono",
+          "Ubuntu Monospace", "Source Code Pro", "Fira Mono", "Droid Sans Mono",
+          "Courier New", monospace;
+      }
+
+      /* Loader overlay */
+      #loader-overlay {
+        position: fixed;
+        inset: 0;
+        background: #fff; /* White background */
+        color: #333;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 12px;
+        z-index: 9999;
+        font-family: system-ui, sans-serif;
+      }
+      .loader-title {
+        font-size: 16px;
+        opacity: 0.9;
+      }
+      .progress-wrap {
+        width: 260px;
+        background: rgba(0, 0, 0, 0.1); /* light grey background */
+        height: 10px;
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: #000000; /* solid green */
+        transition: width 0.15s ease-out;
+      }
+      .progress-text {
+        font-size: 13px;
+        opacity: 0.8;
+      }
+      .hide {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Loader overlay -->
+    <div id="loader-overlay" role="status" aria-live="polite">
+      <div class="loader-title">Loading API documentation…</div>
+      <div class="progress-wrap">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+      <div class="progress-text" id="progress-text">0%</div>
+    </div>
+
+    <!-- Container for Scalar API Reference -->
+    <div id="scalar-container"></div>
+
+    <script>
+      // Update progress bar and text
+      function updateProgress(percent) {
+        const bar = document.getElementById("progress-bar");
+        const txt = document.getElementById("progress-text");
+        const p = Math.max(0, Math.min(100, Math.round(percent)));
+        if (bar) bar.style.width = p + "%";
+        if (txt) txt.textContent = p + "%";
+      }
+
+      // Show indeterminate text when length is unknown
+      function setIndeterminate() {
+        const txt = document.getElementById("progress-text");
+        if (txt) txt.textContent = "Loading…";
+      }
+
+      // Hide loader overlay
+      function hideLoader() {
+        const overlay = document.getElementById("loader-overlay");
+        if (!overlay) return;
+        overlay.classList.add("hide");
+        setTimeout(() => overlay.remove(), 300);
+      }
+
+      // Fetch file with progress tracking
+      function fetchWithProgress(url) {
+        return new Promise((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.open("GET", url, true);
+          xhr.responseType = "text";
+          xhr.onprogress = (evt) => {
+            if (evt.lengthComputable) {
+              updateProgress((evt.loaded / evt.total) * 100);
+            } else {
+              setIndeterminate();
+            }
+          };
+          xhr.onload = () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              updateProgress(100);
+              resolve(xhr.responseText);
+            } else {
+              reject(new Error("HTTP " + xhr.status));
+            }
+          };
+          xhr.onerror = () => reject(new Error("Network error"));
+          xhr.send();
+        });
+      }
+
+      // Bootstrap Scalar after loading the spec
+      async function initScalar() {
+        try {
+          await fetchWithProgress("/api/v1/openapi.yaml");
+
+          // Load Scalar API Reference script dynamically
+          const script = document.createElement("script");
+          script.setAttribute("data-url", "/api/v1/openapi.yaml");
+          script.id = "api-reference";
+          script.src = "https://cdn.jsdelivr.net/npm/@scalar/api-reference";
+          document.body.appendChild(script);
+
+          // Hide the loader after small delay to allow render start
+          requestAnimationFrame(() => hideLoader());
+        } catch (err) {
+          console.error("Failed to load spec:", err);
+          document.getElementById("progress-text").textContent =
+            "Failed to load";
+        }
+      }
+
+      window.onload = initScalar;
+    </script>
+  </body>
+</html>

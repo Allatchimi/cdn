@@ -1,0 +1,71 @@
+#----------------- Default -----------------
+
+# IDE/Editor files and folders
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.DS_Store # macOS
+Thumbs.db # Windows
+
+# Common and output files
+*.log
+*.tmp
+
+# Other temporary or generated files
+*.swp # Vim swap files
+*.bak # Backup files
+
+#----------------- Docker -----------------
+
+# Version control files and folders
+.git
+.gitignore
+.svn
+.hg
+
+# Specific Docker files (should not be copied into the image)
+.dockerignore
+**Dockerfile
+**docker-compose.yml
+**docker-compose.*.yml
+
+#----------------- App -----------------
+
+# If you prefer the allow list template instead of the deny list, see community template:
+# https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
+#
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.idea
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Dependency directories (remove the comment below to include it)
+# vendor/
+
+# Go workspace file
+go.work
+go.work.sum
+
+# env, keys, and others sensibles files
+*.env
+*.env.*
+!app.env
+*.pem
+
+/build
+/bin
+/.build
+
+# public uploads folders
+/public/uploads/*
+!.gitkeep

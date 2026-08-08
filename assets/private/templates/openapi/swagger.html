@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="SwaggerUI" />
+    <title>CDN Swagger API Reference</title>
+
+    <!-- Swagger UI (CSS) -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/swagger-ui-dist@5.27.1/swagger-ui.css"
+    />
+
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+
+    <!-- Swagger UI (CSS) -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/swagger-ui-dist@5.27.1/swagger-ui.css"
+    />
+
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+
+    <style>
+      /* Fullscreen overlay */
+      #loader-overlay {
+        position: fixed;
+        inset: 0;
+        background: #fff; /* White background */
+        color: #333;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 12px;
+        z-index: 9999;
+        font-family: system-ui, sans-serif;
+      }
+      .loader-title {
+        font-size: 16px;
+        opacity: 0.9;
+      }
+      .progress-wrap {
+        width: 260px;
+        background: rgba(
+          0,
+          0,
+          0,
+          0.1
+        ); /* Light grey background behind progress bar */
+        height: 10px;
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: #28a745; /* Solid green color */
+        transition: width 0.15s ease-out;
+      }
+      .progress-text {
+        font-size: 13px;
+        opacity: 0.8;
+      }
+      /* Fade-out animation for hiding loader */
+      .hide {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Loader overlay -->
+    <div id="loader-overlay">
+      <div class="loader-title">Loading API documentation…</div>
+      <div class="progress-wrap">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+      <div class="progress-text" id="progress-text">0%</div>
+    </div>
+
+    <!-- Swagger UI mount container -->
+    <div id="swagger-ui"></div>
+
+    <!-- Allow bfcache by removing unload handlers -->
+    <script>
+      // Ensure the browser can keep previous pages in bfcache for instant back navigation.
+      window.onunload = null;
+      window.onbeforeunload = null;
+    </script>
+
+    <!-- Swagger UI scripts from CDN -->
+    <script
+      crossorigin
+      src="https://unpkg.com/swagger-ui-dist@5.27.1/swagger-ui-bundle.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/swagger-ui-dist@5.27.1/swagger-ui-standalone-preset.js"
+    ></script>
+    <!-- Optional: YAML parser if you want to pass `spec` instead of `url` to avoid refetch -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/js-yaml@4/dist/js-yaml.min.js" integrity="" crossorigin="anonymous"></script> -->
+
+    <script>
+      // Update progress bar and text
+      function updateProgress(percent) {
+        const bar = document.getElementById("progress-bar");
+        const txt = document.getElementById("progress-text");
+        const p = Math.max(0, Math.min(100, Math.round(percent)));
+        if (bar) bar.style.width = p + "%";
+        if (txt) txt.textContent = p + "%";
+      }
+
+      // Show indeterminate state when length is not computable
+      function setIndeterminate() {
+        const txt = document.getElementById("progress-text");
+        if (txt) txt.textContent = "Loading...";
+      }
+
+      // Hide loader overlay with fade animation
+      function hideLoader() {
+        const overlay = document.getElementById("loader-overlay");
+        if (!overlay) return;
+        overlay.classList.add("hide");
+        setTimeout(() => overlay.remove(), 300);
+      }
+
+      // Fetch file with progress tracking using XMLHttpRequest
+      function fetchWithProgress(url) {
+        return new Promise((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.open("GET", url, true);
+          xhr.responseType = "text";
+          xhr.onprogress = (evt) => {
+            if (evt.lengthComputable) {
+              updateProgress((evt.loaded / evt.total) * 100);
+            } else {
+              // If total size is unknown (e.g., gzip/Brotli), show indeterminate text
+              setIndeterminate();
+            }
+          };
+          xhr.onload = () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              updateProgress(100);
+              resolve(xhr.responseText);
+            } else {
+              reject(new Error("HTTP " + xhr.status));
+            }
+          };
+          xhr.onerror = () => reject(new Error("Network error"));
+          xhr.send();
+        });
+      }
+
+      // Initialize Swagger UI after loading the spec
+      async function bootstrapSwagger() {
+        try {
+          // Load the OpenAPI spec with progress tracking
+          const raw = await fetchWithProgress("/api/v1/openapi.yaml");
+
+          // ENG OPTION A (no extra deps): Initialize using `url` (may refetch but likely cached)
+          window.ui = SwaggerUIBundle({
+            url: "/api/v1/openapi.yaml",
+            dom_id: "#swagger-ui",
+            presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
+            layout: "StandaloneLayout",
+          });
+
+          // Hide loader after initial render
+          requestAnimationFrame(() => hideLoader());
+        } catch (err) {
+          console.error("Failed to load OpenAPI spec:", err);
+          const txt = document.getElementById("progress-text");
+          if (txt) txt.textContent = "Failed to load";
+        }
+      }
+
+      // Start everything when page is loaded
+      window.onload = bootstrapSwagger;
+    </script>
+  </body>
+</html>
