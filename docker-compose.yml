@@ -6,10 +6,13 @@ services:
       target: cdn
       dockerfile: ./docker/cdn/Dockerfile
     restart: on-failure
+<<<<<<< HEAD
     env_file:
       - app.env
     extra_hosts:
       - "host.docker.internal:host-gateway"
+=======
+>>>>>>> 22022f0081c75477042da66cd81443ff4401ca37
     volumes:
       - cdn-data:/app/assets
     ports:
@@ -17,4 +20,7 @@ services:
 
 volumes:
   cdn-data:
+<<<<<<< HEAD
 
+=======
+>>>>>>> 22022f0081c75477042da66cd81443ff4401ca37

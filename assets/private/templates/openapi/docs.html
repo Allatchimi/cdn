@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -114,3 +115,121 @@
     </div>
   </body>
 </html>
+=======
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>CDN API Reference</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="/assets/favicon.ico" type="image/x-icon" />
+
+    <!-- Cache control fallback (better to set via server headers in production) -->
+    <meta http-equiv="Cache-Control" content="public, max-age=3600" />
+
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 0;
+        background-color: #f5f5f5;
+      }
+
+      .wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 60px;
+        text-align: center;
+      }
+
+      h1 {
+        color: #333;
+        margin-bottom: 10px;
+      }
+
+      p {
+        margin-top: 0;
+        color: #555;
+      }
+
+      .buttons-container {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        align-items: center;
+        justify-content: center;
+        min-height: 60vh;
+      }
+
+      a {
+        text-decoration: none;
+      }
+
+      .button {
+        width: 250px;
+        padding: 12px 20px;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        text-align: center;
+      }
+
+      .swagger {
+        background-color: #28a745;
+      }
+
+      .swagger:hover {
+        background-color: #218838;
+      }
+
+      .scalar {
+        background-color: #000000;
+      }
+
+      .scalar:hover {
+        background-color: #333333;
+      }
+
+      .redocly {
+        background-color: #6f42c1;
+      }
+
+      .redocly:hover {
+        background-color: #5936a2;
+      }
+
+      .stoplight {
+        background-color: #17a2b8;
+      }
+
+      .stoplight:hover {
+        background-color: #138496;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <h1>API Documentation</h1>
+      <p>Select a documentation format below</p>
+      <div class="buttons-container">
+        <!-- Scalar -->
+        <a href="{{ .BasePath }}/docs/scalar">
+          <button class="button scalar">Scalar</button>
+        </a>
+        <!-- Swagger -->
+        <a href="{{ .BasePath }}/docs/swagger">
+          <button class="button swagger">Swagger</button>
+        </a>
+        <!-- Redocly -->
+        <a href="{{ .BasePath }}/docs/redocly">
+          <button class="button redocly">Redocly</button>
+        </a>
+      </div>
+    </div>
+  </body>
+</html>
+>>>>>>> 22022f0081c75477042da66cd81443ff4401ca37
