@@ -1,19 +1,12 @@
 module cdn
 
-<<<<<<< HEAD
-go 1.24.0
-=======
 go 1.25.0
->>>>>>> 22022f0081c75477042da66cd81443ff4401ca37
 
 require (
 	github.com/danielgtaylor/huma/v2 v2.34.1
 	github.com/gabriel-vasile/mimetype v1.4.9
 	github.com/gin-gonic/gin v1.10.1
-<<<<<<< HEAD
-=======
 	github.com/h2non/bimg v1.1.9
->>>>>>> 22022f0081c75477042da66cd81443ff4401ca37
 	github.com/maypok86/otter v1.2.4
 	github.com/minio/minio-go/v7 v7.0.95
 	github.com/spf13/viper v1.20.1
@@ -36,10 +29,6 @@ require (
 	github.com/go-viper/mapstructure/v2 v2.4.0 // indirect
 	github.com/goccy/go-json v0.10.5 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-<<<<<<< HEAD
-	github.com/h2non/bimg v1.1.9 // indirect
-=======
->>>>>>> 22022f0081c75477042da66cd81443ff4401ca37
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.18.0 // indirect
 	github.com/klauspost/cpuid/v2 v2.3.0 // indirect
