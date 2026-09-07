@@ -6,13 +6,13 @@ services:
       target: cdn
       dockerfile: ./docker/cdn/Dockerfile
     env_file:
-      - ./cdn/app.env
+      - ./app.env
     restart: on-failure
 
     # env_file:
     #   - app.env
-     extra_hosts:
-       - "host.docker.internal:host-gateway"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
     volumes:
       - cdn-data:/app/assets
