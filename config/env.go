@@ -35,6 +35,24 @@ func LoadEnv() error {
 
 	// 1. Dit à Viper de lire les variables d'environnement système (Kubernetes)
 	viper.AutomaticEnv()
+	for _, key := range []string{
+		"APP_ENV",
+		"APP_PORT",
+		"HOST_NAME",
+		"API_KEY",
+		"API_GROUP",
+		"GIN_MODE",
+		"ALLOWED_HOSTS",
+		"MINIO_ENDPOINT",
+		"MINIO_ACCESS_KEY_ID",
+		"MINIO_ACCESS_KEY_SECRET",
+		"MINIO_USE_SSL",
+		"INSECURE_SKIP_VERIFY",
+	} {
+		if err := viper.BindEnv(key); err != nil {
+			return err
+		}
+	}
 
 	// 2. Tente de lire le fichier de config local (si présent)
 	if err := viper.ReadInConfig(); err != nil {
