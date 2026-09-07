@@ -1,7 +1,6 @@
 package config
 
 import (
-
 	"github.com/spf13/viper"
 )
 
@@ -29,22 +28,26 @@ var Env = &Environment{}
 
 // LoadEnv Loads environment variables.
 func LoadEnv() error {
-    viper.SetConfigName("app")
-    viper.SetConfigType("env")
-    viper.AddConfigPath(".")
-    viper.AddConfigPath("/app")
+	viper.SetConfigName("app")
+	viper.SetConfigType("env")
+	viper.AddConfigPath(".")
+	viper.AddConfigPath("/app")
 
-    // 1. DIT À VIPER DE LIRE LES VARIABLES D'ENVIRONNEMENT SYSTÈME
-    viper.AutomaticEnv() 
+	// 1. Dit à Viper de lire les variables d'environnement système (Kubernetes)
+	viper.AutomaticEnv()
 
-    // 2. SI LE FICHIER N'EST PAS LÀ, CE N'EST PAS GRAVE EN PRODUCTION (KUBERNETES)
-    if err := viper.ReadInConfig(); err != nil {
-        if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-            // Le fichier n'est pas là, mais c'est normal si les variables sont dans le Secret K8s
-            return nil 
-        }
-        return err
-    }
-    return nil
+	// 2. Tente de lire le fichier de config local (si présent)
+	if err := viper.ReadInConfig(); err != nil {
+		// Si le fichier n'est pas trouvé, on ne bloque pas (normal en production)
+		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+			return err
+		}
+	}
+
+	// 3. CORRECTIF CRUCIAL : On force le mapping des variables vers la structure Env
+	if err := viper.Unmarshal(Env); err != nil {
+		return err
+	}
+
+	return nil
 }
-
