@@ -49,7 +49,7 @@ func init() {
 		errInit = errOtter
 		helpers.Logger.Error(
 			"Failed to initialize otter cache!",
-			zap.String("Error", errEnv.Error()),
+			zap.String("Error", errOtter.Error()), // ✅ CORRIGÉ
 		)
 	} else {
 		helpers.Logger.Info("Otter cache initialized!")
@@ -61,7 +61,7 @@ func init() {
 		errInit = errMinio
 		helpers.Logger.Error(
 			"Failed to connect to minio server!",
-			zap.String("Error", errEnv.Error()),
+			zap.String("Error", errMinio.Error()), // ✅ CORRIGÉ
 		)
 	} else {
 		helpers.Logger.Info("Connected to minio!")
