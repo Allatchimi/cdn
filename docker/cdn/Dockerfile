@@ -92,7 +92,6 @@ RUN for attempt in 1 2 3 4 5; do \
 # Récupération du binaire léger et des assets
 COPY --from=builder /app/main ./main
 COPY --from=builder /app/assets ./assets
-COPY --from=builder /app/app.env ./app.env
 
 RUN chmod +x /app/main
 
