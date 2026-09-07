@@ -50,6 +50,7 @@ FROM golang:1.25.0-alpine AS builder
 ENV LANG=C.UTF-8
 ENV GOPROXY=https://proxy.golang.org,direct
 ENV GOSUMDB=sum.golang.org
+ENV GOFLAGS=-mod=mod
 
 WORKDIR /app
 
@@ -64,15 +65,15 @@ RUN for attempt in 1 2 3 4 5; do \
 # Gestion du cache des dépendances Go
 COPY ./go.mod ./go.sum ./
 RUN for attempt in 1 2 3 4 5; do \
-      if go mod tidy; then exit 0; fi; \
-      echo "Go module tidy failed (attempt ${attempt}), retrying..."; \
+      if go mod download; then exit 0; fi; \
+      echo "Go module download failed (attempt ${attempt}), retrying..."; \
       sleep 10; \
     done; \
     exit 1
 
 # Build de l'application (On active CGO pour Vips et on nettoie le binaire avec -ldflags)
 COPY . .
-RUN CGO_ENABLED=1 go build -ldflags="-s -w" -o /app/main ./cmd/main.go
+RUN go mod tidy && CGO_ENABLED=1 go build -mod=mod -ldflags="-s -w" -o /app/main ./cmd/main.go
 
 # ----------------------- Stage runner -----------------------
 FROM alpine:latest AS cdn
