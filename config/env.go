@@ -1,7 +1,6 @@
 package config
 
 import (
-	"strings"
 
 	"github.com/spf13/viper"
 )
@@ -30,16 +29,22 @@ var Env = &Environment{}
 
 // LoadEnv Loads environment variables.
 func LoadEnv() error {
-	viper.AddConfigPath(".")
-	viper.SetConfigName("app")
-	viper.SetConfigType("env")
+    viper.SetConfigName("app")
+    viper.SetConfigType("env")
+    viper.AddConfigPath(".")
+    viper.AddConfigPath("/app")
 
-	viper.AutomaticEnv()
+    // 1. DIT À VIPER DE LIRE LES VARIABLES D'ENVIRONNEMENT SYSTÈME
+    viper.AutomaticEnv() 
 
-	err := viper.ReadInConfig()
-	if err == nil {
-		err = viper.Unmarshal(Env)
-		Env.GinMode = strings.Trim(strings.SplitN(strings.TrimSpace(Env.GinMode), "#", 2)[0], "\"' ")
-	}
-	return err
+    // 2. SI LE FICHIER N'EST PAS LÀ, CE N'EST PAS GRAVE EN PRODUCTION (KUBERNETES)
+    if err := viper.ReadInConfig(); err != nil {
+        if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+            // Le fichier n'est pas là, mais c'est normal si les variables sont dans le Secret K8s
+            return nil 
+        }
+        return err
+    }
+    return nil
 }
+
