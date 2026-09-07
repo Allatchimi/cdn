@@ -1,6 +1,8 @@
 package config
 
 import (
+	"strings"
+
 	"github.com/spf13/viper"
 )
 
@@ -37,6 +39,7 @@ func LoadEnv() error {
 	err := viper.ReadInConfig()
 	if err == nil {
 		err = viper.Unmarshal(Env)
+		Env.GinMode = strings.Trim(strings.SplitN(strings.TrimSpace(Env.GinMode), "#", 2)[0], "\"' ")
 	}
 	return err
 }
