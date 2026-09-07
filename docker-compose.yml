@@ -5,6 +5,8 @@ services:
       context: .
       target: cdn
       dockerfile: ./docker/cdn/Dockerfile
+    env_file:
+      - ./cdn/app.env
     restart: on-failure
 <<<<<<< HEAD
     env_file:
