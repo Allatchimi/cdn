@@ -64,8 +64,8 @@ RUN for attempt in 1 2 3 4 5; do \
 # Gestion du cache des dépendances Go
 COPY ./go.mod ./go.sum ./
 RUN for attempt in 1 2 3 4 5; do \
-      if go mod download; then exit 0; fi; \
-      echo "Go module download failed (attempt ${attempt}), retrying..."; \
+      if go mod tidy; then exit 0; fi; \
+      echo "Go module tidy failed (attempt ${attempt}), retrying..."; \
       sleep 10; \
     done; \
     exit 1
@@ -98,4 +98,3 @@ RUN chmod +x /app/main
 EXPOSE 3100
 
 ENTRYPOINT ["/app/main"]
-
